@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "67075d1e57278c9ec0277212"
+  },
+  "metrics": [
+    {
+      "token": "wBTC",
+      "price": 82686.42,
+      "TCR": "1.7374",
+      "recoveryMode": false,
+      "MCR": 1.1,
+      "CCR": 1.3,
+      "minDebt": 100,
+      "LR": 10,
+      "borrowRate": 0.025,
+      "totalcoll": 2656.7183079785236,
+      "totaldebt": 126442180.3390007,
+      "maxMint": 500000000
+    },
+    {
+      "token": "rovBTC",
+      "price": 82686.42,
+      "TCR": "2.2324",
+      "recoveryMode": false,
+      "MCR": 1.25,
+      "CCR": 1.5,
+      "minDebt": 100,
+      "LR": 10,
+      "borrowRate": 0.025,
+      "totalcoll": 83.40906177,
+      "totaldebt": 3089364.050250845,
+      "maxMint": 100000000
+    }
+  ],
+  "pricePUSD": 1
+}]
