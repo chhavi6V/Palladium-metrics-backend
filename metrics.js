@@ -22,31 +22,73 @@ const contracts = [
   },
 ];
 
+// async function fetchMetricsFromBlockchain() {
+//   try {
+//     const db = await connectDB();
+//     const collection = db.collection("metrics");
+//     const document = await collection.findOne();
+
+//     for (let metric of document.metrics) {
+//       const contractInfo = contracts.find((c) => c.token === metric.token);
+//       if (contractInfo) {
+//         const contract = new ethers.Contract(contractInfo.contractAddress, contractInfo.abi, provider);
+
+//         metric.MCR = parseFloat(formatUnits(await contract.getMcr(contractInfo.assetaddress), 18));
+//         metric.CCR = parseFloat(formatUnits(await contract.getCcr(contractInfo.assetaddress), 18));
+//         metric.minDebt = parseFloat(formatUnits(await contract.getMinNetDebt(contractInfo.assetaddress), 18));
+//         metric.LR = parseFloat(formatUnits(await contract.getDebtTokenGasCompensation(contractInfo.assetaddress), 18));
+//         metric.maxMint = parseFloat(formatUnits(await contract.getMintCap(contractInfo.assetaddress), 18));
+//       }
+//     }
+
+//     await collection.updateOne({ _id: document._id }, { $set: { metrics: document.metrics } });
+//     return document.metrics;
+//   } catch (error) {
+//     console.error("❌ Error fetching metrics:", error);
+//     return { error: error.message };
+//   }
+// }
+
 async function fetchMetricsFromBlockchain() {
   try {
     const db = await connectDB();
     const collection = db.collection("metrics");
     const document = await collection.findOne();
 
-    for (let metric of document.metrics) {
-      const contractInfo = contracts.find((c) => c.token === metric.token);
-      if (contractInfo) {
+    const updatedMetrics = await Promise.all(
+      document.metrics.map(async (metric) => {
+        const contractInfo = contracts.find((c) => c.token === metric.token);
+        if (!contractInfo) return metric;
+
         const contract = new ethers.Contract(contractInfo.contractAddress, contractInfo.abi, provider);
 
-        metric.MCR = parseFloat(formatUnits(await contract.getMcr(contractInfo.assetaddress), 18));
-        metric.CCR = parseFloat(formatUnits(await contract.getCcr(contractInfo.assetaddress), 18));
-        metric.minDebt = parseFloat(formatUnits(await contract.getMinNetDebt(contractInfo.assetaddress), 18));
-        metric.LR = parseFloat(formatUnits(await contract.getDebtTokenGasCompensation(contractInfo.assetaddress), 18));
-        metric.maxMint = parseFloat(formatUnits(await contract.getMintCap(contractInfo.assetaddress), 18));
-      }
-    }
+        // Run blockchain calls in parallel
+        const [MCR, CCR, minDebt, LR, maxMint] = await Promise.all([
+          contract.getMcr(contractInfo.assetaddress),
+          contract.getCcr(contractInfo.assetaddress),
+          contract.getMinNetDebt(contractInfo.assetaddress),
+          contract.getDebtTokenGasCompensation(contractInfo.assetaddress),
+          contract.getMintCap(contractInfo.assetaddress),
+        ]);
 
-    await collection.updateOne({ _id: document._id }, { $set: { metrics: document.metrics } });
-    return document.metrics;
+        return {
+          ...metric,
+          MCR: parseFloat(formatUnits(MCR, 18)),
+          CCR: parseFloat(formatUnits(CCR, 18)),
+          minDebt: parseFloat(formatUnits(minDebt, 18)),
+          LR: parseFloat(formatUnits(LR, 18)),
+          maxMint: parseFloat(formatUnits(maxMint, 18)),
+        };
+      })
+    );
+
+    await collection.updateOne({ _id: document._id }, { $set: { metrics: updatedMetrics } });
+    return updatedMetrics;
   } catch (error) {
     console.error("❌ Error fetching metrics:", error);
     return { error: error.message };
   }
 }
+
 
 module.exports = fetchMetricsFromBlockchain;
