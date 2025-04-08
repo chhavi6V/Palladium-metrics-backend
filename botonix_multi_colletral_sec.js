@@ -54,6 +54,8 @@ async function updateMcrAndCcrInMongoDB() {
           contractInfo.abi,
           provider
         );
+
+        console.log( "old",contractInfo.assetaddress)
         const contractInstance2 = new ethers.Contract(
           "0x2Fef509fA966B614483B411f8cA3208C26da3c4",
           abi2,
@@ -103,9 +105,9 @@ async function updateMcrAndCcrInMongoDB() {
         // metric.totalcoll = parseFloat(formattedtotalcollateral);
         // metric.totaldebt = parseFloat(formattedtotaldebt);
 
-        // console.log(
-        //   `Updated ${metric.token}: MCR = ${formattedMCR}, CCR = ${formattedCCR}, minDebt = ${formattedminDebt}, LR = ${formattedLR}`
-        // );
+        console.log(
+          `Updated ${metric.token}: MCR = ${formattedMCR}, CCR = ${formattedCCR}, minDebt = ${formattedminDebt}, LR = ${formattedLR}`
+        );
       }
     }
 
@@ -114,7 +116,7 @@ async function updateMcrAndCcrInMongoDB() {
       { _id: document._id },
       { $set: { metrics: document.metrics } }
     );
-
+    return document.metrics;
     //console.log("MCR and CCR updated successfully.");
   } catch (err) {
     console.error("Error updating MCR and CCR in MongoDB", err);
@@ -127,20 +129,21 @@ async function updateMcrAndCcrInMongoDB() {
   }
 }
 
+module.exports = updateMcrAndCcrInMongoDB;
 // Start the update process
-updateMcrAndCcrInMongoDB();
+// updateMcrAndCcrInMongoDB();
 
 // Handle system signal events (for graceful shutdown)
-process.on("SIGINT", async () => {
-  console.log("SIGINT received.");
-  await client.close();
-  console.log("MongoDB connection closed due to app termination.");
-  process.exit(0);
-});
+// process.on("SIGINT", async () => {
+//   console.log("SIGINT received.");
+//   await client.close();
+//   console.log("MongoDB connection closed due to app termination.");
+//   process.exit(0);
+// });
 
-process.on("SIGTERM", async () => {
-  console.log("SIGTERM received.");
-  await client.close();
-  console.log("MongoDB connection closed due to app termination.");
-  process.exit(0);
-});
+// process.on("SIGTERM", async () => {
+//   console.log("SIGTERM received.");
+//   await client.close();
+//   console.log("MongoDB connection closed due to app termination.");
+//   process.exit(0);
+// });
