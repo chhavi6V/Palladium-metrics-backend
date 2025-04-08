@@ -4,6 +4,7 @@ const { formatUnits } = ethers;
 
 const AdminContract_abi1 = require("./AdminContract_multi.json"); // ABI for the contracts
 const abi2 = require("./Trove_Manager_multi.json"); // ABI for the contracts
+const { mongoUri, dbName } = require("./config");
 // Initialize the provider
 const provider = new ethers.JsonRpcProvider(
   "https://rpc.ankr.com/botanix_testnet"
@@ -25,12 +26,9 @@ const contracts = [
   },
 ];
 
-// MongoDB connection details
-const mongoUrl = "mongodb://localhost:27017/";
-const dbName = "palladium";
 
 // MongoDB client instance
-const client = new MongoClient(mongoUrl);
+const client = new MongoClient(mongoUri);
 
 async function updateMcrAndCcrInMongoDB() {
   try {
