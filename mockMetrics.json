@@ -1,0 +1,30 @@
+[
+  {
+    "token": "wBTC",
+    "price": 79123.52280466,
+    "TCR": "1.7072",
+    "recoveryMode": false,
+    "MCR": 1.1,
+    "CCR": 1.3,
+    "minDebt": 100,
+    "LR": 10,
+    "borrowRate": 0.025,
+    "totalcoll": 2550.80592500257,
+    "totaldebt": 118224490.085535,
+    "maxMint": 500000000
+  },
+  {
+    "token": "rovBTC",
+    "price": 79123.52280466,
+    "TCR": "2.2739",
+    "recoveryMode": false,
+    "MCR": 1.25,
+    "CCR": 1.5,
+    "minDebt": 100,
+    "LR": 10,
+    "borrowRate": 0.025,
+    "totalcoll": 81.22528946,
+    "totaldebt": 2826388.87353035,
+    "maxMint": 100000000
+  }
+]
