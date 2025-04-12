@@ -35,7 +35,7 @@ async function updateMcrAndCcrInMongoDB() {
     await client.connect();
     console.log("Connected to MongoDB");
     const db = client.db(dbName);
-    const collection = db.collection("metrics");
+    const collection = db.collection("metrics2");
 
     // Get the document that contains the metrics array
     const document = await collection.findOne();
@@ -53,7 +53,7 @@ async function updateMcrAndCcrInMongoDB() {
           provider
         );
 
-        console.log( "old",contractInfo.assetaddress)
+
         const contractInstance2 = new ethers.Contract(
           "0x2Fef509fA966B614483B411f8cA3208C26da3c4",
           abi2,
@@ -71,26 +71,11 @@ async function updateMcrAndCcrInMongoDB() {
         const mintCap = await contractInstance.getMintCap(contractInfo.assetaddress);
 
 
-
-
-        // const totalcollateral = await contractInstance2.getEntireSystemColl(
-        //   contractInfo.assetaddress
-        // );
-        // const totaldebt = await contractInstance2.getEntireSystemDebt(
-        //   contractInfo.assetaddress
-        // );
-        // Format MCR and CCR values
         const formattedMCR = formatUnits(MCR, 18);
         const formattedCCR = formatUnits(CCR, 18);
         const formattedminDebt = formatUnits(minDebt, 18);
         const formattedLR = formatUnits(LR, 18);
         const mint = parseFloat(formatUnits(mintCap, 18));
-        //console.log("getMintcap",mint);
-
-        // const formattedtotalcollateral = ethers.utils.formatUnits(
-        //   totalcollateral,
-        //   18
-        // );
 
         // const formattedtotaldebt = ethers.utils.formatUnits(totaldebt, 18);
 
@@ -100,12 +85,7 @@ async function updateMcrAndCcrInMongoDB() {
         metric.minDebt = parseFloat(formattedminDebt);
         metric.LR = parseFloat(formattedLR);
         metric.maxMint = mint;
-        // metric.totalcoll = parseFloat(formattedtotalcollateral);
-        // metric.totaldebt = parseFloat(formattedtotaldebt);
 
-        console.log(
-          `Updated ${metric.token}: MCR = ${formattedMCR}, CCR = ${formattedCCR}, minDebt = ${formattedminDebt}, LR = ${formattedLR}`
-        );
       }
     }
 
@@ -128,20 +108,3 @@ async function updateMcrAndCcrInMongoDB() {
 }
 
 module.exports = updateMcrAndCcrInMongoDB;
-// Start the update process
-// updateMcrAndCcrInMongoDB();
-
-// Handle system signal events (for graceful shutdown)
-// process.on("SIGINT", async () => {
-//   console.log("SIGINT received.");
-//   await client.close();
-//   console.log("MongoDB connection closed due to app termination.");
-//   process.exit(0);
-// });
-
-// process.on("SIGTERM", async () => {
-//   console.log("SIGTERM received.");
-//   await client.close();
-//   console.log("MongoDB connection closed due to app termination.");
-//   process.exit(0);
-// });
